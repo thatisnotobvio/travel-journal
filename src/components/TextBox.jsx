@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import SelectionWrapper from "./SelectionWrapper";
 
-function TextBox({ textbox, onRemove, onDuplicate, onTextChange }) {
+function TextBox({ textbox, onRemove, onDuplicate, onTextChange, onPositionChange, onSizeChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const textareaRef = useRef(null);
 
@@ -18,12 +18,14 @@ function TextBox({ textbox, onRemove, onDuplicate, onTextChange }) {
 
   return (
     <SelectionWrapper
-      defaultSize={{ width: 180, height: 80 }}
+      defaultSize={{ width: textbox.w || 180, height: textbox.h || 80 }}
       defaultPosition={{ x: textbox.x || 80, y: textbox.y || 80 }}
       minWidth={80}
       minHeight={40}
       onRemove={onRemove}
       onDuplicate={onDuplicate}
+      onPositionChange={onPositionChange}
+      onSizeChange={onSizeChange}
       disableDraggingWhen={isEditing}
     >
       <div className="textbox" onDoubleClick={() => setIsEditing(true)}>

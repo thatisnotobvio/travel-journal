@@ -1,6 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { DndContext, DragOverlay, pointerWithin } from "@dnd-kit/core";
-import html2canvas from "html2canvas";
+// 1. Swapped the library import here
+import { toPng } from 'html-to-image'; 
 import "./index.css";
 import Passport from "./components/Passport";
 import Toolbar from "./components/Toolbar";
@@ -17,19 +18,19 @@ function App() {
   const [deskBg, setDeskBg] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
-const {
-  pageStamps, pageNotes, pageTextboxes, pageStickers, pageImages,
-  addStampToPage, removeStampFromPage,
-  addStickerToPage, removeStickerFromPage,
-  addNoteToPage, removeNoteFromPage, updateNoteText,
-  addTextboxToPage, removeTextboxFromPage, updateTextboxText,
-  addImageToPage, removeImageFromPage,
-  clearAll,
-} = usePassportState();
+  const {
+    pageStamps, pageNotes, pageTextboxes, pageStickers, pageImages,
+    addStampToPage, removeStampFromPage, updateStampPosition,
+    addStickerToPage, removeStickerFromPage, updateStickerPosition,
+    addNoteToPage, removeNoteFromPage, updateNoteText, updateNotePosition,
+    addTextboxToPage, removeTextboxFromPage, updateTextboxText, updateTextboxPosition,
+    addImageToPage, removeImageFromPage, updateImagePosition,
+    clearAll,
+  } = usePassportState();
 
-const handleAddImage = (src) => {
-  addImageToPage(getCurrentSpread(), src);
-};
+  const handleAddImage = (src) => {
+    addImageToPage(getCurrentSpread(), src);
+  };
 
   const setBookletRef = (node) => {
     if (node) bookletRef.current = node;
@@ -39,7 +40,6 @@ const handleAddImage = (src) => {
     return stampDropRef.current?.spreadIndex ?? 0;
   };
 
-  // Click handlers — land at center
   const handleSelectStamp = (stamp) => {
     addStampToPage(getCurrentSpread(), stamp);
   };
@@ -60,7 +60,6 @@ const handleAddImage = (src) => {
     setDeskBg(file);
   };
 
-  // Drag handlers — land where dropped
   const handleDragStart = (event) => {
     const { active } = event;
     const stamp = stamps.find(s => `stamp-${s.id}` === active.id);
@@ -99,48 +98,95 @@ const handleAddImage = (src) => {
     if (sticker) addStickerToPage(spreadIndex, sticker, x, y);
   };
 
-  const handleDownload = async () => {
-    const target = document.querySelector(".canvas-area");
-    if (!target || isDownloading) return;
-    setIsDownloading(true);
+  // 2. Updated Download Logic
+const handleDownload = async () => {
+  const target = document.querySelector(".canvas-area");
+  const mat = document.querySelector(".mat-container");
+  const booklet = document.querySelector(".booklet-3d");
 
-    try {
-      const controls = document.querySelectorAll(
-        ".selection-controls-top, .selection-rotate-handle"
-      );
-      controls.forEach(el => el.style.visibility = "hidden");
-      await new Promise(r => setTimeout(r, 100));
+  if (!target || !mat || isDownloading) return;
+  setIsDownloading(true);
 
-      const canvas = await html2canvas(target, {
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        scale: 2,
-        onclone: (clonedDoc) => {
-          const booklet = clonedDoc.querySelector(".booklet-3d");
-          if (booklet) booklet.style.transform = "none";
-        },
-      });
+  // 1. Capture the EXACT current pixel size of the mat as it looks now
+  const rect = mat.getBoundingClientRect();
+  const originalMatW = rect.width;
+  const originalMatH = rect.height;
 
-      controls.forEach(el => el.style.visibility = "");
+  // 2. Save original styles
+  const originalTargetStyle = target.style.cssText;
+  const originalMatStyle = mat.style.cssText;
+  const originalBookletStyle = booklet?.style.cssText || "";
 
-      const link = document.createElement("a");
-      link.download = "my-journal.png";
-      link.href = canvas.toDataURL("image/png");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  try {
+    // Hide UI
+    document.querySelectorAll(".selection-controls-top, .selection-rotate-handle")
+      .forEach(el => el.style.visibility = "hidden");
 
-    } catch (err) {
-      console.error("Download failed:", err);
-      alert(`Download failed: ${err.message}`);
-    } finally {
-      setIsDownloading(false);
-      document.querySelectorAll(
-        ".selection-controls-top, .selection-rotate-handle"
-      ).forEach(el => el.style.visibility = "");
+    // 3. Define the 16:9 "Photo Studio"
+    const exportWidth = target.clientWidth;
+    const exportHeight = (exportWidth * 9) / 16;
+
+    // 4. Apply Neutralizing Styles (While PRESERVING the background)
+    target.style.cssText = `
+      position: relative !important;
+      left: 0 !important;
+      top: 0 !important;
+      width: ${exportWidth}px !important;
+      height: ${exportHeight}px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      margin: 0 !important;
+      /* Re-apply the background image explicitly */
+      background-image: ${deskBg ? `url(${deskBg})` : 'none'} !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+`;
+
+    // 5. Force Mat to PIXELS (Stops the stretching)
+    mat.style.cssText = `
+      width: ${originalMatW}px !important;
+      height: ${originalMatH}px !important;
+      transform: none !important;
+      perspective: none !important;
+      flex-shrink: 0 !important;
+    `;
+
+    if (booklet) {
+      booklet.style.transform = "none !important";
+      booklet.style.perspective = "none !important";
     }
-  };
+
+    await new Promise(r => requestAnimationFrame(r));
+    await new Promise(r => setTimeout(r, 200));
+
+    // 6. Capture
+    const dataUrl = await toPng(target, {
+      width: exportWidth,
+      height: exportHeight,
+      pixelRatio: 2,
+      cacheBust: true,
+    });
+
+    const link = document.createElement("a");
+    link.download = `my-journal-16-9.png`;
+    link.href = dataUrl;
+    link.click();
+
+  } catch (err) {
+    console.error("Download failed:", err);
+  } finally {
+    // 7. Restore
+    target.style.cssText = originalTargetStyle;
+    mat.style.cssText = originalMatStyle;
+    if (booklet) booklet.style.cssText = originalBookletStyle;
+    
+    document.querySelectorAll(".selection-controls-top, .selection-rotate-handle")
+      .forEach(el => el.style.visibility = "");
+    setIsDownloading(false);
+  }
+};
 
   return (
     <DndContext
@@ -193,6 +239,11 @@ const handleAddImage = (src) => {
                 onTextboxTextChange={updateTextboxText}
                 onRemoveSticker={removeStickerFromPage}
                 onRemoveImage={removeImageFromPage}
+                onUpdateStampPosition={updateStampPosition}
+                onUpdateStickerPosition={updateStickerPosition}
+                onUpdateNotePosition={updateNotePosition}
+                onUpdateTextboxPosition={updateTextboxPosition}
+                onUpdateImagePosition={updateImagePosition}
                 onStampDrop={stampDropRef}
               />
             </div>
@@ -211,7 +262,6 @@ const handleAddImage = (src) => {
           </div>
         ) : null}
       </DragOverlay>
-
     </DndContext>
   );
 }

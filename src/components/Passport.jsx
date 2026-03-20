@@ -14,6 +14,8 @@ function BookletCanvas({
   onRemoveStamp, onRemoveNote, onNoteTextChange,
   onRemoveTextbox, onTextboxTextChange,
   onRemoveSticker, onRemoveImage,
+  onUpdateStampPosition, onUpdateStickerPosition,
+  onUpdateNotePosition, onUpdateTextboxPosition, onUpdateImagePosition,
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `spread-${spreadIndex}`,
@@ -23,19 +25,51 @@ function BookletCanvas({
   return (
     <div ref={setNodeRef} className={`booklet-canvas ${isOver ? "booklet-canvas-over" : ""}`}>
       {stamps.map((stamp) => (
-        <StampItem key={stamp.instanceId} stamp={stamp} onRemove={() => onRemoveStamp(stamp.instanceId)} />
+        <StampItem
+          key={stamp.instanceId}
+          stamp={stamp}
+          onRemove={() => onRemoveStamp(stamp.instanceId)}
+          onPositionChange={(x, y) => onUpdateStampPosition(stamp.instanceId, x, y)}
+          onSizeChange={(w, h, x, y) => onUpdateStampPosition(stamp.instanceId, x, y, w, h)}
+        />
       ))}
       {stickers.map((sticker) => (
-        <StampItem key={sticker.instanceId} stamp={sticker} onRemove={() => onRemoveSticker(sticker.instanceId)} />
+        <StampItem
+          key={sticker.instanceId}
+          stamp={sticker}
+          onRemove={() => onRemoveSticker(sticker.instanceId)}
+          onPositionChange={(x, y) => onUpdateStickerPosition(sticker.instanceId, x, y)}
+          onSizeChange={(w, h, x, y) => onUpdateStickerPosition(sticker.instanceId, x, y, w, h)}
+        />
       ))}
       {images.map((image) => (
-        <ImageItem key={image.id} image={image} onRemove={() => onRemoveImage(image.id)} />
+        <ImageItem
+          key={image.id}
+          image={image}
+          onRemove={() => onRemoveImage(image.id)}
+          onPositionChange={(x, y) => onUpdateImagePosition(image.id, x, y)}
+          onSizeChange={(w, h, x, y) => onUpdateImagePosition(image.id, x, y, w, h)}
+        />
       ))}
       {notes.map((note) => (
-        <StickyNote key={note.id} note={note} onRemove={() => onRemoveNote(note.id)} onTextChange={(text) => onNoteTextChange(note.id, text)} />
+        <StickyNote
+          key={note.id}
+          note={note}
+          onRemove={() => onRemoveNote(note.id)}
+          onTextChange={(text) => onNoteTextChange(note.id, text)}
+          onPositionChange={(x, y) => onUpdateNotePosition(note.id, x, y)}
+          onSizeChange={(w, h, x, y) => onUpdateNotePosition(note.id, x, y, w, h)}
+        />
       ))}
       {textboxes.map((tb) => (
-        <TextBox key={tb.id} textbox={tb} onRemove={() => onRemoveTextbox(tb.id)} onTextChange={(text) => onTextboxTextChange(tb.id, text)} />
+        <TextBox
+          key={tb.id}
+          textbox={tb}
+          onRemove={() => onRemoveTextbox(tb.id)}
+          onTextChange={(text) => onTextboxTextChange(tb.id, text)}
+          onPositionChange={(x, y) => onUpdateTextboxPosition(tb.id, x, y)}
+          onSizeChange={(w, h, x, y) => onUpdateTextboxPosition(tb.id, x, y, w, h)}
+        />
       ))}
     </div>
   );
@@ -46,6 +80,8 @@ function Passport({
   onRemoveStamp, onRemoveNote, onNoteTextChange,
   onRemoveTextbox, onTextboxTextChange,
   onRemoveSticker, onRemoveImage,
+  onUpdateStampPosition, onUpdateStickerPosition,
+  onUpdateNotePosition, onUpdateTextboxPosition, onUpdateImagePosition,
   onStampDrop,
 }) {
   const [spreadIndex, setSpreadIndex] = useState(0);
@@ -103,6 +139,11 @@ function Passport({
           onTextboxTextChange={(id, text) => onTextboxTextChange(spreadIndex, id, text)}
           onRemoveSticker={(id) => onRemoveSticker(spreadIndex, id)}
           onRemoveImage={(id) => onRemoveImage(spreadIndex, id)}
+          onUpdateStampPosition={(id, x, y, w, h) => onUpdateStampPosition(spreadIndex, id, x, y, w, h)}
+          onUpdateStickerPosition={(id, x, y, w, h) => onUpdateStickerPosition(spreadIndex, id, x, y, w, h)}
+          onUpdateNotePosition={(id, x, y, w, h) => onUpdateNotePosition(spreadIndex, id, x, y, w, h)}
+          onUpdateTextboxPosition={(id, x, y, w, h) => onUpdateTextboxPosition(spreadIndex, id, x, y, w, h)}
+          onUpdateImagePosition={(id, x, y, w, h) => onUpdateImagePosition(spreadIndex, id, x, y, w, h)}
         />
       </div>
 

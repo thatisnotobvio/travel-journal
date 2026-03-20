@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "india-passport-state";
 
-// ✅ helper to read localStorage once
 const getSavedData = () => {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
@@ -18,59 +17,52 @@ function usePassportState() {
   const [pageNotes, setPageNotes] = useState(savedData.pageNotes || {});
   const [pageTextboxes, setPageTextboxes] = useState(savedData.pageTextboxes || {});
   const [pageStickers, setPageStickers] = useState(savedData.pageStickers || {});
-  const [pageImages, setPageImages] = useState(savedData.pageImages || {}); // ✅ FIXED POSITION
+  const [pageImages, setPageImages] = useState(savedData.pageImages || {});
 
-  // ✅ persist to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          pageStamps,
-          pageNotes,
-          pageTextboxes,
-          pageStickers,
-          pageImages,
-        })
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        pageStamps, pageNotes, pageTextboxes, pageStickers, pageImages,
+      }));
     } catch {
       console.warn("Could not save to localStorage");
     }
   }, [pageStamps, pageNotes, pageTextboxes, pageStickers, pageImages]);
 
-  // ✅ helper
   const getCanvasCenter = () => {
     const canvasEl = document.querySelector(".booklet-canvas");
-    const rect = canvasEl
-      ? canvasEl.getBoundingClientRect()
-      : { width: 800, height: 600 };
-
+    const rect = canvasEl ? canvasEl.getBoundingClientRect() : { width: 800, height: 600 };
     return { cx: rect.width / 2, cy: rect.height / 2 };
   };
 
   // ---------------- STAMPS ----------------
   const addStampToPage = (spreadIndex, stamp, x = null, y = null) => {
     const { cx, cy } = getCanvasCenter();
-
-    setPageStamps((prev) => ({
+    setPageStamps(prev => ({
       ...prev,
-      [spreadIndex]: [
-        ...(prev[spreadIndex] || []),
-        {
-          ...stamp,
-          instanceId: `${stamp.id}-${Date.now()}`,
-          x: x ?? cx - 60,
-          y: y ?? cy - 60,
-        },
-      ],
+      [spreadIndex]: [...(prev[spreadIndex] || []), {
+        ...stamp,
+        instanceId: `${stamp.id}-${Date.now()}`,
+        x: x ?? cx - 60,
+        y: y ?? cy - 60,
+      }],
     }));
   };
 
   const removeStampFromPage = (spreadIndex, instanceId) => {
-    setPageStamps((prev) => ({
+    setPageStamps(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).filter(
-        (s) => s.instanceId !== instanceId
+      [spreadIndex]: (prev[spreadIndex] || []).filter(s => s.instanceId !== instanceId),
+    }));
+  };
+
+  const updateStampPosition = (spreadIndex, instanceId, x, y, width, height) => {
+    setPageStamps(prev => ({
+      ...prev,
+      [spreadIndex]: (prev[spreadIndex] || []).map(s =>
+        s.instanceId === instanceId
+          ? { ...s, x, y, ...(width && { width }), ...(height && { height }) }
+          : s
       ),
     }));
   };
@@ -78,26 +70,31 @@ function usePassportState() {
   // ---------------- STICKERS ----------------
   const addStickerToPage = (spreadIndex, sticker, x = null, y = null) => {
     const { cx, cy } = getCanvasCenter();
-
-    setPageStickers((prev) => ({
+    setPageStickers(prev => ({
       ...prev,
-      [spreadIndex]: [
-        ...(prev[spreadIndex] || []),
-        {
-          ...sticker,
-          instanceId: `${sticker.id}-${Date.now()}`,
-          x: x ?? cx - 60,
-          y: y ?? cy - 60,
-        },
-      ],
+      [spreadIndex]: [...(prev[spreadIndex] || []), {
+        ...sticker,
+        instanceId: `${sticker.id}-${Date.now()}`,
+        x: x ?? cx - 60,
+        y: y ?? cy - 60,
+      }],
     }));
   };
 
   const removeStickerFromPage = (spreadIndex, instanceId) => {
-    setPageStickers((prev) => ({
+    setPageStickers(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).filter(
-        (s) => s.instanceId !== instanceId
+      [spreadIndex]: (prev[spreadIndex] || []).filter(s => s.instanceId !== instanceId),
+    }));
+  };
+
+  const updateStickerPosition = (spreadIndex, instanceId, x, y, width, height) => {
+    setPageStickers(prev => ({
+      ...prev,
+      [spreadIndex]: (prev[spreadIndex] || []).map(s =>
+        s.instanceId === instanceId
+          ? { ...s, x, y, ...(width && { width }), ...(height && { height }) }
+          : s
       ),
     }));
   };
@@ -105,35 +102,40 @@ function usePassportState() {
   // ---------------- NOTES ----------------
   const addNoteToPage = (spreadIndex, x = null, y = null) => {
     const { cx, cy } = getCanvasCenter();
-
-    setPageNotes((prev) => ({
+    setPageNotes(prev => ({
       ...prev,
-      [spreadIndex]: [
-        ...(prev[spreadIndex] || []),
-        {
-          id: `note-${Date.now()}`,
-          text: "",
-          x: x ?? cx - 100,
-          y: y ?? cy - 80,
-        },
-      ],
+      [spreadIndex]: [...(prev[spreadIndex] || []), {
+        id: `note-${Date.now()}`,
+        text: "",
+        x: x ?? cx - 100,
+        y: y ?? cy - 80,
+      }],
     }));
   };
 
   const removeNoteFromPage = (spreadIndex, noteId) => {
-    setPageNotes((prev) => ({
+    setPageNotes(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).filter(
-        (n) => n.id !== noteId
-      ),
+      [spreadIndex]: (prev[spreadIndex] || []).filter(n => n.id !== noteId),
     }));
   };
 
   const updateNoteText = (spreadIndex, noteId, text) => {
-    setPageNotes((prev) => ({
+    setPageNotes(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).map((n) =>
+      [spreadIndex]: (prev[spreadIndex] || []).map(n =>
         n.id === noteId ? { ...n, text } : n
+      ),
+    }));
+  };
+
+  const updateNotePosition = (spreadIndex, noteId, x, y, width, height) => {
+    setPageNotes(prev => ({
+      ...prev,
+      [spreadIndex]: (prev[spreadIndex] || []).map(n =>
+        n.id === noteId
+          ? { ...n, x, y, ...(width && { width }), ...(height && { height }) }
+          : n
       ),
     }));
   };
@@ -141,35 +143,40 @@ function usePassportState() {
   // ---------------- TEXTBOX ----------------
   const addTextboxToPage = (spreadIndex, x = null, y = null) => {
     const { cx, cy } = getCanvasCenter();
-
-    setPageTextboxes((prev) => ({
+    setPageTextboxes(prev => ({
       ...prev,
-      [spreadIndex]: [
-        ...(prev[spreadIndex] || []),
-        {
-          id: `tb-${Date.now()}`,
-          text: "",
-          x: x ?? cx - 90,
-          y: y ?? cy - 40,
-        },
-      ],
+      [spreadIndex]: [...(prev[spreadIndex] || []), {
+        id: `tb-${Date.now()}`,
+        text: "",
+        x: x ?? cx - 90,
+        y: y ?? cy - 40,
+      }],
     }));
   };
 
   const removeTextboxFromPage = (spreadIndex, tbId) => {
-    setPageTextboxes((prev) => ({
+    setPageTextboxes(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).filter(
-        (t) => t.id !== tbId
-      ),
+      [spreadIndex]: (prev[spreadIndex] || []).filter(t => t.id !== tbId),
     }));
   };
 
   const updateTextboxText = (spreadIndex, tbId, text) => {
-    setPageTextboxes((prev) => ({
+    setPageTextboxes(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).map((t) =>
+      [spreadIndex]: (prev[spreadIndex] || []).map(t =>
         t.id === tbId ? { ...t, text } : t
+      ),
+    }));
+  };
+
+  const updateTextboxPosition = (spreadIndex, tbId, x, y, width, height) => {
+    setPageTextboxes(prev => ({
+      ...prev,
+      [spreadIndex]: (prev[spreadIndex] || []).map(t =>
+        t.id === tbId
+          ? { ...t, x, y, ...(width && { width }), ...(height && { height }) }
+          : t
       ),
     }));
   };
@@ -177,26 +184,31 @@ function usePassportState() {
   // ---------------- IMAGES ----------------
   const addImageToPage = (spreadIndex, src, x = null, y = null) => {
     const { cx, cy } = getCanvasCenter();
-
-    setPageImages((prev) => ({
+    setPageImages(prev => ({
       ...prev,
-      [spreadIndex]: [
-        ...(prev[spreadIndex] || []),
-        {
-          id: `img-${Date.now()}`,
-          src,
-          x: x ?? cx - 80,
-          y: y ?? cy - 80,
-        },
-      ],
+      [spreadIndex]: [...(prev[spreadIndex] || []), {
+        id: `img-${Date.now()}`,
+        src,
+        x: x ?? cx - 80,
+        y: y ?? cy - 80,
+      }],
     }));
   };
 
   const removeImageFromPage = (spreadIndex, imageId) => {
-    setPageImages((prev) => ({
+    setPageImages(prev => ({
       ...prev,
-      [spreadIndex]: (prev[spreadIndex] || []).filter(
-        (i) => i.id !== imageId
+      [spreadIndex]: (prev[spreadIndex] || []).filter(i => i.id !== imageId),
+    }));
+  };
+
+  const updateImagePosition = (spreadIndex, imageId, x, y, width, height) => {
+    setPageImages(prev => ({
+      ...prev,
+      [spreadIndex]: (prev[spreadIndex] || []).map(i =>
+        i.id === imageId
+          ? { ...i, x, y, ...(width && { width }), ...(height && { height }) }
+          : i
       ),
     }));
   };
@@ -212,29 +224,12 @@ function usePassportState() {
   };
 
   return {
-    pageStamps,
-    pageNotes,
-    pageTextboxes,
-    pageStickers,
-    pageImages,
-
-    addStampToPage,
-    removeStampFromPage,
-
-    addStickerToPage,
-    removeStickerFromPage,
-
-    addNoteToPage,
-    removeNoteFromPage,
-    updateNoteText,
-
-    addTextboxToPage,
-    removeTextboxFromPage,
-    updateTextboxText,
-
-    addImageToPage,
-    removeImageFromPage,
-
+    pageStamps, pageNotes, pageTextboxes, pageStickers, pageImages,
+    addStampToPage, removeStampFromPage, updateStampPosition,
+    addStickerToPage, removeStickerFromPage, updateStickerPosition,
+    addNoteToPage, removeNoteFromPage, updateNoteText, updateNotePosition,
+    addTextboxToPage, removeTextboxFromPage, updateTextboxText, updateTextboxPosition,
+    addImageToPage, removeImageFromPage, updateImagePosition,
     clearAll,
   };
 }

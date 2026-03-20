@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import SelectionWrapper from "./SelectionWrapper";
 import stickyNoteImg from "../assets/sticky-note.png";
 
-function StickyNote({ note, onRemove, onDuplicate, onTextChange }) {
+function StickyNote({ note, onRemove, onDuplicate, onTextChange, onPositionChange, onSizeChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const textareaRef = useRef(null);
 
@@ -19,12 +19,14 @@ function StickyNote({ note, onRemove, onDuplicate, onTextChange }) {
 
   return (
     <SelectionWrapper
-      defaultSize={{ width: 200, height: 160 }}
+      defaultSize={{ width: note.w || 200, height: note.h || 160 }}
       defaultPosition={{ x: note.x || 80, y: note.y || 80 }}
       minWidth={140}
       minHeight={110}
       onRemove={onRemove}
       onDuplicate={onDuplicate}
+      onPositionChange={onPositionChange}
+      onSizeChange={onSizeChange}
       disableDraggingWhen={isEditing}
     >
       <div className="sticky-note" onDoubleClick={() => setIsEditing(true)}>

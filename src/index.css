@@ -34,7 +34,7 @@ body {
   left: 260px;
   right: 0;
   bottom: 0;
-  background: url("/src/assets/desk-table.svg") center center / cover no-repeat;
+  background: center center / 100% 100%  no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
