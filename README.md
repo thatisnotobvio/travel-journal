@@ -1,21 +1,20 @@
-<<<<<<< HEAD
-# React + Vite
+Travel Journal 🏔️✨
+A minimalist digital space designed to capture the essence of your journeys. This project focuses on a "dreamy" and nostalgic aesthetic, allowing you to document travel milestones, moods, and memories in a clean, organized layout.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+View Live Project
 
-Currently, two official plugins are available:
+📖 About the Project
+This journal is built for those who value visual storytelling. It’s more than just a log; it’s a digital keepsake designed with a specific focus on:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Atmospheric Design: Using stars, rain, and soft aesthetics to frame your memories.
 
-## React Compiler
+Intuitive Logging: Quickly record destinations, dates, and personal reflections.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Visual Priority: A layout that highlights photography and aesthetic collages.
 
-## Expanding the ESLint configuration
+🛠️ Built With
+HTML5 – For structured, semantic content.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# travel-journal
-Creative Journal Website
->>>>>>> 12c16ce014e99c145c94ab95959a59755fc8e3af
+CSS3 – For custom "nostalgic" styling and responsive layouts.
+
+JavaScript – To handle interactive elements and data.
