@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import SelectionWrapper from "./SelectionWrapper";
 
-function TextBox({ textbox, onRemove, onDuplicate, onTextChange, onPositionChange, onSizeChange }) {
+function TextBox({ textbox, onRemove, onDuplicate, onBringToFront, onSendToBack, onTextChange, onPositionChange, onSizeChange }) {
   const [isEditing, setIsEditing] = useState(false);
   const textareaRef = useRef(null);
 
@@ -24,6 +24,8 @@ function TextBox({ textbox, onRemove, onDuplicate, onTextChange, onPositionChang
       minHeight={40}
       onRemove={onRemove}
       onDuplicate={onDuplicate}
+      onBringToFront={onBringToFront}
+      onSendToBack={onSendToBack}
       onPositionChange={onPositionChange}
       onSizeChange={onSizeChange}
       disableDraggingWhen={isEditing}

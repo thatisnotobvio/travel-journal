@@ -16,6 +16,8 @@ function BookletCanvas({
   onRemoveSticker, onRemoveImage,
   onUpdateStampPosition, onUpdateStickerPosition,
   onUpdateNotePosition, onUpdateTextboxPosition, onUpdateImagePosition,
+  onDuplicateStamp, onDuplicateSticker, onDuplicateNote, onDuplicateImage,
+  onBringToFront, onSendToBack,
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `spread-${spreadIndex}`,
@@ -29,6 +31,9 @@ function BookletCanvas({
           key={stamp.instanceId}
           stamp={stamp}
           onRemove={() => onRemoveStamp(stamp.instanceId)}
+          onDuplicate={() => onDuplicateStamp(stamp.instanceId)}
+          onBringToFront={() => onBringToFront('stamp', stamp.instanceId)}
+          onSendToBack={() => onSendToBack('stamp', stamp.instanceId)}
           onPositionChange={(x, y) => onUpdateStampPosition(stamp.instanceId, x, y)}
           onSizeChange={(w, h, x, y) => onUpdateStampPosition(stamp.instanceId, x, y, w, h)}
         />
@@ -38,6 +43,9 @@ function BookletCanvas({
           key={sticker.instanceId}
           stamp={sticker}
           onRemove={() => onRemoveSticker(sticker.instanceId)}
+          onDuplicate={() => onDuplicateSticker(sticker.instanceId)}
+          onBringToFront={() => onBringToFront('sticker', sticker.instanceId)}
+          onSendToBack={() => onSendToBack('sticker', sticker.instanceId)}
           onPositionChange={(x, y) => onUpdateStickerPosition(sticker.instanceId, x, y)}
           onSizeChange={(w, h, x, y) => onUpdateStickerPosition(sticker.instanceId, x, y, w, h)}
         />
@@ -47,6 +55,9 @@ function BookletCanvas({
           key={image.id}
           image={image}
           onRemove={() => onRemoveImage(image.id)}
+          onDuplicate={() => onDuplicateImage(image.id)}
+          onBringToFront={() => onBringToFront('image', image.id)}
+          onSendToBack={() => onSendToBack('image', image.id)}
           onPositionChange={(x, y) => onUpdateImagePosition(image.id, x, y)}
           onSizeChange={(w, h, x, y) => onUpdateImagePosition(image.id, x, y, w, h)}
         />
@@ -56,6 +67,9 @@ function BookletCanvas({
           key={note.id}
           note={note}
           onRemove={() => onRemoveNote(note.id)}
+          onDuplicate={() => onDuplicateNote(note.id)}
+          onBringToFront={() => onBringToFront('note', note.id)}
+          onSendToBack={() => onSendToBack('note', note.id)}
           onTextChange={(text) => onNoteTextChange(note.id, text)}
           onPositionChange={(x, y) => onUpdateNotePosition(note.id, x, y)}
           onSizeChange={(w, h, x, y) => onUpdateNotePosition(note.id, x, y, w, h)}
@@ -66,6 +80,9 @@ function BookletCanvas({
           key={tb.id}
           textbox={tb}
           onRemove={() => onRemoveTextbox(tb.id)}
+          onDuplicate={() => onDuplicateNote(tb.id)}
+          onBringToFront={() => onBringToFront('note', tb.id)}
+          onSendToBack={() => onSendToBack('note', tb.id)}
           onTextChange={(text) => onTextboxTextChange(tb.id, text)}
           onPositionChange={(x, y) => onUpdateTextboxPosition(tb.id, x, y)}
           onSizeChange={(w, h, x, y) => onUpdateTextboxPosition(tb.id, x, y, w, h)}
@@ -82,6 +99,8 @@ function Passport({
   onRemoveSticker, onRemoveImage,
   onUpdateStampPosition, onUpdateStickerPosition,
   onUpdateNotePosition, onUpdateTextboxPosition, onUpdateImagePosition,
+  onDuplicateStamp, onDuplicateSticker, onDuplicateNote, onDuplicateImage,
+  onBringToFront, onSendToBack,
   onStampDrop,
 }) {
   const [spreadIndex, setSpreadIndex] = useState(0);
@@ -144,6 +163,12 @@ function Passport({
           onUpdateNotePosition={(id, x, y, w, h) => onUpdateNotePosition(spreadIndex, id, x, y, w, h)}
           onUpdateTextboxPosition={(id, x, y, w, h) => onUpdateTextboxPosition(spreadIndex, id, x, y, w, h)}
           onUpdateImagePosition={(id, x, y, w, h) => onUpdateImagePosition(spreadIndex, id, x, y, w, h)}
+          onDuplicateStamp={(id) => onDuplicateStamp(spreadIndex, id)}
+          onDuplicateSticker={(id) => onDuplicateSticker(spreadIndex, id)}
+          onDuplicateNote={(id) => onDuplicateNote(spreadIndex, id)}
+          onDuplicateImage={(id) => onDuplicateImage(spreadIndex, id)}
+          onBringToFront={(type, id) => onBringToFront(spreadIndex, type, id)}
+          onSendToBack={(type, id) => onSendToBack(spreadIndex, type, id)}
         />
       </div>
 

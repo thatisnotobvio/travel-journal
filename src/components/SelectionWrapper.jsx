@@ -10,6 +10,8 @@ function SelectionWrapper({
   lockAspectRatio = false,
   onRemove,
   onDuplicate,
+  onBringToFront,
+  onSendToBack,
   onPositionChange,
   onSizeChange,
   disableDraggingWhen = false,
@@ -17,6 +19,7 @@ function SelectionWrapper({
   const [isSelected, setIsSelected] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [isRotating, setIsRotating] = useState(false);
+  const [showLayerMenu, setShowLayerMenu] = useState(false);
   const rndRef = useRef(null);
   const rotateStartAngle = useRef(0);
   const rotateStartMouse = useRef(0);
@@ -57,6 +60,7 @@ function SelectionWrapper({
   const handleGlobalClick = (e) => {
     if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
       setIsSelected(false);
+      setShowLayerMenu(false);
     }
   };
 
@@ -99,21 +103,52 @@ function SelectionWrapper({
         className="selection-wrapper"
         onClick={() => setIsSelected(true)}
       >
+        {/* Top controls */}
         {isSelected && (
           <div className="selection-controls-top" onMouseDown={e => e.stopPropagation()}>
-            <button className="sel-ctrl-btn" title="Layers">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                <polyline points="2 17 12 22 22 17"/>
-                <polyline points="2 12 12 17 22 12"/>
-              </svg>
-            </button>
+
+            {/* Layer button with dropdown */}
+            <div className="sel-ctrl-layer-wrapper">
+              <button
+                className="sel-ctrl-btn"
+                title="Layers"
+                onClick={() => setShowLayerMenu(v => !v)}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                  <polyline points="2 17 12 22 22 17"/>
+                  <polyline points="2 12 12 17 22 12"/>
+                </svg>
+              </button>
+
+              {/* Layer dropdown */}
+              {showLayerMenu && (
+                <div className="sel-layer-menu">
+                  <button
+                    className="sel-layer-option"
+                    onClick={() => { onBringToFront?.(); setShowLayerMenu(false); }}
+                  >
+                    bring to front
+                  </button>
+                  <button
+                    className="sel-layer-option"
+                    onClick={() => { onSendToBack?.(); setShowLayerMenu(false); }}
+                  >
+                    send to back
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Duplicate */}
             <button className="sel-ctrl-btn" title="Duplicate" onClick={onDuplicate}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
               </svg>
             </button>
+
+            {/* Delete */}
             <button className="sel-ctrl-btn sel-ctrl-delete" title="Delete" onClick={onRemove}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="3 6 5 6 21 6"/>
@@ -125,6 +160,7 @@ function SelectionWrapper({
           </div>
         )}
 
+        {/* Content with rotation */}
         <div
           className={`selection-content ${isSelected ? "selection-content-active" : ""}`}
           style={{ transform: `rotate(${rotation}deg)` }}
@@ -132,6 +168,7 @@ function SelectionWrapper({
           {children}
         </div>
 
+        {/* Rotate handle */}
         {isSelected && (
           <div className="selection-rotate-handle" onMouseDown={handleRotateStart}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

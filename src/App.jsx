@@ -25,6 +25,8 @@ function App() {
     addNoteToPage, removeNoteFromPage, updateNoteText, updateNotePosition,
     addTextboxToPage, removeTextboxFromPage, updateTextboxText, updateTextboxPosition,
     addImageToPage, removeImageFromPage, updateImagePosition,
+    duplicateStamp, duplicateSticker, duplicateNote, duplicateImage,
+    bringToFront, sendToBack,
     clearAll,
   } = usePassportState();
 
@@ -245,6 +247,12 @@ const handleDownload = async () => {
                 onUpdateTextboxPosition={updateTextboxPosition}
                 onUpdateImagePosition={updateImagePosition}
                 onStampDrop={stampDropRef}
+                onDuplicateStamp={duplicateStamp}
+                onDuplicateSticker={duplicateSticker}
+                onDuplicateNote={duplicateNote}
+                onDuplicateImage={duplicateImage}
+                onBringToFront={bringToFront}
+                onSendToBack={sendToBack}
               />
             </div>
           </div>

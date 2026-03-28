@@ -223,6 +223,124 @@ function usePassportState() {
     localStorage.removeItem(STORAGE_KEY);
   };
 
+  const duplicateStamp = (spreadIndex, instanceId) => {
+    setPageStamps(prev => {
+      const items = prev[spreadIndex] || [];
+      const item = items.find(s => s.instanceId === instanceId);
+      if (!item) return prev;
+      return {
+        ...prev,
+        [spreadIndex]: [...items, { ...item, instanceId: `${item.id}-${Date.now()}`, x: (item.x || 0) + 20, y: (item.y || 0) + 20 }]
+      };
+    });
+  };
+
+  const duplicateSticker = (spreadIndex, instanceId) => {
+    setPageStickers(prev => {
+      const items = prev[spreadIndex] || [];
+      const item = items.find(s => s.instanceId === instanceId);
+      if (!item) return prev;
+      return {
+        ...prev,
+        [spreadIndex]: [...items, { ...item, instanceId: `${item.id}-${Date.now()}`, x: (item.x || 0) + 20, y: (item.y || 0) + 20 }]
+      };
+    });
+  };
+
+  const duplicateNote = (spreadIndex, noteId) => {
+    setPageNotes(prev => {
+      const items = prev[spreadIndex] || [];
+      const item = items.find(n => n.id === noteId);
+      if (!item) return prev;
+      return {
+        ...prev,
+        [spreadIndex]: [...items, { ...item, id: `note-${Date.now()}`, x: (item.x || 0) + 20, y: (item.y || 0) + 20 }]
+      };
+    });
+  };
+
+  const duplicateImage = (spreadIndex, imageId) => {
+    setPageImages(prev => {
+      const items = prev[spreadIndex] || [];
+      const item = items.find(i => i.id === imageId);
+      if (!item) return prev;
+      return {
+        ...prev,
+        [spreadIndex]: [...items, { ...item, id: `img-${Date.now()}`, x: (item.x || 0) + 20, y: (item.y || 0) + 20 }]
+      };
+    });
+  };
+
+  const bringToFront = (spreadIndex, type, id) => {
+    if (type === 'stamp') {
+      setPageStamps(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(s => s.instanceId === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [...items.filter(s => s.instanceId !== id), item] };
+      });
+    }
+    if (type === 'sticker') {
+      setPageStickers(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(s => s.instanceId === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [...items.filter(s => s.instanceId !== id), item] };
+      });
+    }
+    if (type === 'note') {
+      setPageNotes(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(n => n.id === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [...items.filter(n => n.id !== id), item] };
+      });
+    }
+    if (type === 'image') {
+      setPageImages(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(i => i.id === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [...items.filter(i => i.id !== id), item] };
+      });
+    }
+  };
+
+  const sendToBack = (spreadIndex, type, id) => {
+    if (type === 'stamp') {
+      setPageStamps(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(s => s.instanceId === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [item, ...items.filter(s => s.instanceId !== id)] };
+      });
+    }
+    if (type === 'sticker') {
+      setPageStickers(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(s => s.instanceId === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [item, ...items.filter(s => s.instanceId !== id)] };
+      });
+    }
+    if (type === 'note') {
+      setPageNotes(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(n => n.id === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [item, ...items.filter(n => n.id !== id)] };
+      });
+    }
+    if (type === 'image') {
+      setPageImages(prev => {
+        const items = prev[spreadIndex] || [];
+        const item = items.find(i => i.id === id);
+        if (!item) return prev;
+        return { ...prev, [spreadIndex]: [item, ...items.filter(i => i.id !== id)] };
+      });
+    }
+  };
+
   return {
     pageStamps, pageNotes, pageTextboxes, pageStickers, pageImages,
     addStampToPage, removeStampFromPage, updateStampPosition,
@@ -230,7 +348,8 @@ function usePassportState() {
     addNoteToPage, removeNoteFromPage, updateNoteText, updateNotePosition,
     addTextboxToPage, removeTextboxFromPage, updateTextboxText, updateTextboxPosition,
     addImageToPage, removeImageFromPage, updateImagePosition,
-    clearAll,
+    clearAll, duplicateStamp, duplicateSticker, duplicateNote, duplicateImage,
+    bringToFront, sendToBack,
   };
 }
 
