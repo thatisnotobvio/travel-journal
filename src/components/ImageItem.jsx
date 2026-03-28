@@ -10,6 +10,7 @@ function ImageItem({ image, onRemove, onDuplicate, onBringToFront, onSendToBack,
       lockAspectRatio={false}
       onRemove={onRemove}
       onDuplicate={onDuplicate}
+      zIndex={image.zIndex || 1}
       onBringToFront={onBringToFront}
       onSendToBack={onSendToBack}
       onPositionChange={onPositionChange}

@@ -8,6 +8,7 @@ function StampItem({ stamp, onRemove, onDuplicate, onBringToFront, onSendToBack,
       minWidth={60}
       minHeight={60}
       lockAspectRatio={true}
+      zIndex={stamp.zIndex || 1}
       onRemove={onRemove}
       onDuplicate={onDuplicate}
       onBringToFront={onBringToFront}

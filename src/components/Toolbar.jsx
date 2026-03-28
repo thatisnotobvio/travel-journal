@@ -73,13 +73,13 @@ function Toolbar({ onSelectStamp, onSelectSticker, onAddNote, onAddText, onSelec
           />
           {/* Image upload button */}
           <button
-            className="tb-element-btn tb-element-btn-wide"
+            className="tb-element-btn-2 tb-element-btn-wide"
             onClick={() => fileInputRef.current?.click()}
           >
             <img
                 src={imageBtn}
                 alt="upload"
-                style={{ width: "18px", height: "18px", marginRight: "6px" }}
+                style={{ width: "110px", height: "70px", marginRight: "6px" }}
             />
             <span className="tb-element-text">IMAGE</span>
           </button>
@@ -174,7 +174,6 @@ function Toolbar({ onSelectStamp, onSelectSticker, onAddNote, onAddText, onSelec
               <img src={bg.file} alt={bg.label} />
             </div>
           ))}
-          <div className="tb-bg-circle tb-bg-add">+</div>
         </div>
       </div>
 

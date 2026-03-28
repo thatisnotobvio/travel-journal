@@ -220,6 +220,19 @@ body {
   transition: border 0.2s, background 0.2s;
 }
 
+.tb-element-btn-2 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 80px;
+  padding: 14px 8px;
+  background: #fff;
+  border: 1.5px solid #efefef;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+}
+
 .tb-element-btn:hover {
   background: #fafafa;
   border-color: #ddd;
@@ -233,7 +246,7 @@ body {
 
 .tb-element-text {
   font-family: sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 1px;
   color: #777;

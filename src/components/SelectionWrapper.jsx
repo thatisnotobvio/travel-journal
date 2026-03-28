@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Rnd } from "react-rnd";
 
 function SelectionWrapper({
@@ -15,6 +15,10 @@ function SelectionWrapper({
   onPositionChange,
   onSizeChange,
   disableDraggingWhen = false,
+  zIndex = 1,
+
+  itemData,
+  OnUpdate,
 }) {
   const [isSelected, setIsSelected] = useState(false);
   const [rotation, setRotation] = useState(0);
@@ -69,6 +73,12 @@ function SelectionWrapper({
     return () => window.removeEventListener("mousedown", handleGlobalClick);
   });
 
+  // RIGHT - Use useEffect for side effects!
+  useEffect(() => {
+    window.addEventListener("mousedown", handleGlobalClick);
+    return () => window.removeEventListener("mousedown", handleGlobalClick);
+  }, []); // Empty array so it only runs once
+
   return (
     <Rnd
       ref={rndRef}
@@ -96,7 +106,7 @@ function SelectionWrapper({
           position.y
         );
       }}
-      style={{ zIndex: isSelected ? 10 : 1 }}
+      style={{ zIndex: isSelected ? 999 : (zIndex || 1) }}
     >
       <div
         ref={wrapperRef}
@@ -106,6 +116,42 @@ function SelectionWrapper({
         {/* Top controls */}
         {isSelected && (
           <div className="selection-controls-top" onMouseDown={e => e.stopPropagation()}>
+            
+            {/* ONLY SHOW THESE IF IT'S A TEXTBOX */}
+            {itemData?.text !== undefined && (
+              <>
+                {/* Color Picker */}
+                <input 
+                  type="color" 
+                  className="sel-ctrl-color"
+                  value={itemData.color || "#4A3F35"}
+                  onChange={(e) => onUpdate({ color: e.target.value })}
+                />
+
+                {/* Font Family Dropdown */}
+                <select 
+                  value={itemData.fontFamily || "Instrument Serif"}
+                  onChange={(e) => onUpdate({ fontFamily: e.target.value })}
+                  className="sel-ctrl-select"
+                >
+                  <option value="Instrument Serif">Instrument Serif</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Courier New">Courier</option>
+                </select>
+
+                {/* Font Size Dropdown */}
+                <select 
+                  value={itemData.fontSize || 24}
+                  onChange={(e) => onUpdate({ fontSize: parseInt(e.target.value) })}
+                  className="sel-ctrl-select"
+                >
+                  <option value="16">16</option>
+                  <option value="24">24</option>
+                  <option value="32">32</option>
+                  <option value="48">48</option>
+                </select>
+              </>
+            )}
 
             {/* Layer button with dropdown */}
             <div className="sel-ctrl-layer-wrapper">

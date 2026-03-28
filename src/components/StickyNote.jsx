@@ -25,6 +25,7 @@ function StickyNote({ note, onRemove, onDuplicate, onTextChange, onPositionChang
       minHeight={110}
       onRemove={onRemove}
       onDuplicate={onDuplicate}
+      zIndex={note.zIndex || 1}
       onPositionChange={onPositionChange}
       onSizeChange={onSizeChange}
       disableDraggingWhen={isEditing}
